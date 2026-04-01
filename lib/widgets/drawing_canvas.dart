@@ -16,24 +16,20 @@ class DrawingCanvas extends ConsumerWidget {
       builder: (context, constraints) {
         final content = Stack(
           children: [
-            GestureDetector(
-              onPanStart: drawingState.toolMode == ToolMode.draw ? (details) {
-                RenderBox renderBox = context.findRenderObject() as RenderBox;
-                final localPosition = renderBox.globalToLocal(details.globalPosition);
-                drawingNotifier.startStroke(localPosition);
+            Listener(
+              onPointerDown: drawingState.toolMode == ToolMode.draw ? (details) {
+                drawingNotifier.startStroke(details.localPosition);
               } : null,
-              onPanUpdate: drawingState.toolMode == ToolMode.draw ? (details) {
-                RenderBox renderBox = context.findRenderObject() as RenderBox;
-                final localPosition = renderBox.globalToLocal(details.globalPosition);
-                drawingNotifier.updateStroke(localPosition);
+              onPointerMove: drawingState.toolMode == ToolMode.draw ? (details) {
+                drawingNotifier.updateStroke(details.localPosition);
               } : null,
-              onPanEnd: drawingState.toolMode == ToolMode.draw ? (details) {
+              onPointerUp: drawingState.toolMode == ToolMode.draw ? (details) {
                 drawingNotifier.endStroke();
               } : null,
               child: Container(
                 width: constraints.maxWidth,
                 height: constraints.maxHeight,
-                color: Colors.transparent,
+                color: Colors.transparent, // Ensures it captures touch events
                 child: CustomPaint(
                   painter: PlaybookPainter(
                     strokes: drawingState.strokes,

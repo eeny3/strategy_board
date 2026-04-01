@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/play_storage_provider.dart';
 import '../providers/drawing_provider.dart';
@@ -13,6 +14,21 @@ class SavedPlaysScreen extends ConsumerStatefulWidget {
 class _SavedPlaysScreenState extends ConsumerState<SavedPlaysScreen> {
   String _searchQuery = '';
   String _selectedFolder = 'All';
+
+  @override
+  void initState() {
+    super.initState();
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+  }
+
+  @override
+  void dispose() {
+    SystemChrome.setPreferredOrientations(DeviceOrientation.values);
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {

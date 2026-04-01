@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/drill_provider.dart';
 import '../providers/play_storage_provider.dart';
@@ -13,6 +14,21 @@ class DrillsLibraryScreen extends ConsumerStatefulWidget {
 }
 
 class _DrillsLibraryScreenState extends ConsumerState<DrillsLibraryScreen> {
+  @override
+  void initState() {
+    super.initState();
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+  }
+
+  @override
+  void dispose() {
+    SystemChrome.setPreferredOrientations(DeviceOrientation.values);
+    super.dispose();
+  }
+
   void _showCreateDrillDialog(BuildContext context, WidgetRef ref) {
     final titleController = TextEditingController();
     final descController = TextEditingController();

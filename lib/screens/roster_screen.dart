@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
 import '../models/roster_player.dart';
@@ -12,6 +13,21 @@ class RosterScreen extends ConsumerStatefulWidget {
 }
 
 class _RosterScreenState extends ConsumerState<RosterScreen> {
+  @override
+  void initState() {
+    super.initState();
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+  }
+
+  @override
+  void dispose() {
+    SystemChrome.setPreferredOrientations(DeviceOrientation.values);
+    super.dispose();
+  }
+
   void _showAddOrEditPlayerDialog(BuildContext context, WidgetRef ref, [RosterPlayer? existingPlayer]) {
     final nameController = TextEditingController(text: existingPlayer?.name ?? '');
     final jerseyController = TextEditingController(text: existingPlayer?.jerseyNumber ?? '');

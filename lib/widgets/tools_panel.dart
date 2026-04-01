@@ -6,7 +6,9 @@ import '../models/stroke.dart';
 import 'player_customization_dialog.dart';
 
 class ToolsPanel extends ConsumerWidget {
-  ToolsPanel({super.key});
+  final VoidCallback? onHide;
+  
+  ToolsPanel({super.key, this.onHide});
 
   final List<Color> _availableColors = [
     const Color(0xFF023398), // Primary Blue
@@ -101,7 +103,7 @@ class ToolsPanel extends ConsumerWidget {
                             color: Colors.grey[800],
                             tooltip: 'Undo',
                             constraints: const BoxConstraints(),
-                            padding: const EdgeInsets.symmetric(horizontal: 8),
+                            padding: const EdgeInsets.symmetric(horizontal: 4),
                             onPressed: () {
                               drawingNotifier.undo();
                             },
@@ -111,7 +113,7 @@ class ToolsPanel extends ConsumerWidget {
                             color: Colors.red[400],
                             tooltip: 'Clear Board',
                             constraints: const BoxConstraints(),
-                            padding: const EdgeInsets.symmetric(horizontal: 8),
+                            padding: const EdgeInsets.symmetric(horizontal: 4),
                             onPressed: () {
                               showDialog(
                                 context: context,
@@ -220,37 +222,53 @@ class ToolsPanel extends ConsumerWidget {
                   // Row 3: Colors
                   SizedBox(
                     height: 40,
-                    child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: _availableColors.length,
-                      itemBuilder: (context, index) {
-                        final color = _availableColors[index];
-                        final isSelected = drawingState.selectedColor == color;
-                        return GestureDetector(
-                          onTap: () => drawingNotifier.changeColor(color),
-                          child: Container(
-                            margin: const EdgeInsets.only(right: 16),
-                            child: Center(
-                              child: AnimatedContainer(
-                                duration: const Duration(milliseconds: 200),
-                                width: isSelected ? 32 : 24,
-                                height: isSelected ? 32 : 24,
-                                decoration: BoxDecoration(
-                                  color: color,
-                                  shape: BoxShape.circle,
-                                  border: Border.all(
-                                    color: isSelected ? const Color(0xFF38e77d) : Colors.grey[400]!,
-                                    width: isSelected ? 3 : 1,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: _availableColors.length,
+                            itemBuilder: (context, index) {
+                              final color = _availableColors[index];
+                              final isSelected = drawingState.selectedColor == color;
+                              return GestureDetector(
+                                onTap: () => drawingNotifier.changeColor(color),
+                                child: Container(
+                                  margin: const EdgeInsets.only(right: 16),
+                                  child: Center(
+                                    child: AnimatedContainer(
+                                      duration: const Duration(milliseconds: 200),
+                                      width: isSelected ? 32 : 24,
+                                      height: isSelected ? 32 : 24,
+                                      decoration: BoxDecoration(
+                                        color: color,
+                                        shape: BoxShape.circle,
+                                        border: Border.all(
+                                          color: isSelected ? const Color(0xFF38e77d) : Colors.grey[400]!,
+                                          width: isSelected ? 3 : 1,
+                                        ),
+                                        boxShadow: isSelected
+                                            ? [BoxShadow(color: color.withAlpha(100), blurRadius: 8, spreadRadius: 2)]
+                                            : null,
+                                      ),
+                                    ),
                                   ),
-                                  boxShadow: isSelected
-                                      ? [BoxShadow(color: color.withAlpha(100), blurRadius: 8, spreadRadius: 2)]
-                                      : null,
                                 ),
-                              ),
-                            ),
+                              );
+                            },
                           ),
-                        );
-                      },
+                        ),
+                        if (onHide != null)
+                          IconButton(
+                            icon: const Icon(Icons.visibility_off),
+                            color: Colors.grey[800],
+                            tooltip: 'Hide Panel',
+                            constraints: const BoxConstraints(),
+                            padding: const EdgeInsets.symmetric(horizontal: 4),
+                            onPressed: onHide,
+                          ),
+                      ],
                     ),
                   ),
                 ],

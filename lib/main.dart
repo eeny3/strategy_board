@@ -2,27 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import 'package:shared_preferences/shared_preferences.dart';
-import 'screens/home_screen.dart';
-import 'screens/onboarding_screen.dart';
+import 'screens/splash_screen.dart';
 
-Future<void> main() async {
+void main() {
   WidgetsFlutterBinding.ensureInitialized();
   
-  final prefs = await SharedPreferences.getInstance();
-  final hasSeenOnboarding = prefs.getBool('hasSeenOnboarding') ?? false;
-
   runApp(
-    ProviderScope(
-      child: MyApp(hasSeenOnboarding: hasSeenOnboarding),
+    const ProviderScope(
+      child: MyApp(),
     ),
   );
 }
 
 class MyApp extends StatelessWidget {
-  final bool hasSeenOnboarding;
-  
-  const MyApp({super.key, required this.hasSeenOnboarding});
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -70,7 +63,7 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
-      home: hasSeenOnboarding ? const HomeScreen() : const OnboardingScreen(),
+      home: const SplashScreen(),
     );
   }
 }

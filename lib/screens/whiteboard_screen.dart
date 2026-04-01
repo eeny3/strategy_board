@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:gal/gal.dart';
@@ -27,6 +28,22 @@ class WhiteboardScreen extends ConsumerStatefulWidget {
 
 class _WhiteboardScreenState extends ConsumerState<WhiteboardScreen> {
   final ScreenshotController screenshotController = ScreenshotController();
+  bool _isPanelVisible = true;
+
+  @override
+  void initState() {
+    super.initState();
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+  }
+
+  @override
+  void dispose() {
+    SystemChrome.setPreferredOrientations(DeviceOrientation.values);
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -56,108 +73,125 @@ class _WhiteboardScreenState extends ConsumerState<WhiteboardScreen> {
           ),
           
           // Floating Top Navigation Bar
-          Positioned(
-            top: MediaQuery.of(context).padding.top + 10,
-            left: 16,
-            right: 16,
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(20),
-              child: BackdropFilter(
-                filter: ui.ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withAlpha(200),
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: Colors.white.withAlpha(50)),
-                     boxShadow: const [
-                       BoxShadow(color: Colors.black12, blurRadius: 10, offset: Offset(0, 4))
-                     ],
-                  ),
-                  child: Row(
-                    children: [
-                      IconButton(
-                        icon: const Icon(Icons.list),
-                        tooltip: 'Saved Plays',
-                        constraints: const BoxConstraints(),
-                        padding: const EdgeInsets.symmetric(horizontal: 8),
-                        onPressed: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (_) => const SavedPlaysScreen()));
-                        },
-                      ),
-                      const Spacer(),
-                      const Text(
-                        'DIGITAL PLAYBOOK',
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                      ),
-                      const Spacer(),
-                      IconButton(
-                        icon: const Icon(Icons.save),
-                        tooltip: 'Save Play',
-                        constraints: const BoxConstraints(),
-                        padding: const EdgeInsets.symmetric(horizontal: 8),
-                        onPressed: () {
-                          _showSaveDialog(context, ref);
-                        },
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.share),
-                        tooltip: 'Export',
-                        constraints: const BoxConstraints(),
-                        padding: const EdgeInsets.symmetric(horizontal: 8),
-                        onPressed: () {
-                          _showExportOptions(context);
-                        },
-                      ),
-                      PopupMenuButton<String>(
-                        icon: const Icon(Icons.more_vert),
-                        tooltip: 'More Options',
-                        offset: const Offset(0, 40),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                        onSelected: (value) {
-                          if (value == 'background') {
-                            _showBackgroundSelector(context, ref);
-                          } else if (value == 'settings') {
-                            Navigator.push(context, MaterialPageRoute(builder: (_) => const SettingsScreen()));
-                          }
-                        },
-                        itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-                          const PopupMenuItem<String>(
-                            value: 'background',
-                            child: Row(
-                              children: [
-                                Icon(Icons.map_outlined, size: 20),
-                                SizedBox(width: 8),
-                                Text('Change Background'),
-                              ],
+          if (_isPanelVisible)
+            Positioned(
+              top: MediaQuery.of(context).padding.top + 10,
+              left: 16,
+              right: 16,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(20),
+                child: BackdropFilter(
+                  filter: ui.ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withAlpha(200),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: Colors.white.withAlpha(50)),
+                       boxShadow: const [
+                         BoxShadow(color: Colors.black12, blurRadius: 10, offset: Offset(0, 4))
+                       ],
+                    ),
+                    child: Row(
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.list),
+                          tooltip: 'Saved Plays',
+                          constraints: const BoxConstraints(),
+                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                          onPressed: () {
+                            Navigator.push(context, MaterialPageRoute(builder: (_) => const SavedPlaysScreen()));
+                          },
+                        ),
+                        const Spacer(),
+                        const Text(
+                          'BOARD',
+                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                        ),
+                        const Spacer(),
+                        IconButton(
+                          icon: const Icon(Icons.save),
+                          tooltip: 'Save Play',
+                          constraints: const BoxConstraints(),
+                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                          onPressed: () {
+                            _showSaveDialog(context, ref);
+                          },
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.share),
+                          tooltip: 'Export',
+                          constraints: const BoxConstraints(),
+                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                          onPressed: () {
+                            _showExportOptions(context);
+                          },
+                        ),
+                        PopupMenuButton<String>(
+                          icon: const Icon(Icons.more_vert),
+                          tooltip: 'More Options',
+                          offset: const Offset(0, 40),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                          onSelected: (value) {
+                            if (value == 'background') {
+                              _showBackgroundSelector(context, ref);
+                            } else if (value == 'settings') {
+                              Navigator.push(context, MaterialPageRoute(builder: (_) => const SettingsScreen()));
+                            }
+                          },
+                          itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                            const PopupMenuItem<String>(
+                              value: 'background',
+                              child: Row(
+                                children: [
+                                  Icon(Icons.map_outlined, size: 20),
+                                  SizedBox(width: 8),
+                                  Text('Change Background'),
+                                ],
+                              ),
                             ),
-                          ),
-                          const PopupMenuItem<String>(
-                            value: 'settings',
-                            child: Row(
-                              children: [
-                                Icon(Icons.settings, size: 20),
-                                SizedBox(width: 8),
-                                Text('Settings'),
-                              ],
+                            const PopupMenuItem<String>(
+                              value: 'settings',
+                              child: Row(
+                                children: [
+                                  Icon(Icons.settings, size: 20),
+                                  SizedBox(width: 8),
+                                  Text('Settings'),
+                                ],
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
-                    ],
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
 
           // Tools Panel positioned at bottom
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: ToolsPanel(),
-          ),
+          if (_isPanelVisible)
+            Positioned(
+              bottom: 0,
+              left: 0,
+              right: 0,
+              child: ToolsPanel(
+                onHide: () => setState(() => _isPanelVisible = false),
+              ),
+            ),
+
+          // Show Panel Button
+          if (!_isPanelVisible)
+            Positioned(
+              bottom: MediaQuery.of(context).padding.bottom + 16,
+              right: 16,
+              child: FloatingActionButton(
+                backgroundColor: Colors.white,
+                foregroundColor: const Color(0xFF023398),
+                onPressed: () => setState(() => _isPanelVisible = true),
+                child: const Icon(Icons.brush),
+              ),
+            ),
         ],
       ),
     );
@@ -371,5 +405,3 @@ class _WhiteboardScreenState extends ConsumerState<WhiteboardScreen> {
     }
   }
 }
-
-

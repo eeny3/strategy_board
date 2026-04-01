@@ -59,8 +59,17 @@ class PlaybookPainter extends CustomPainter {
   void _drawArrowHead(Canvas canvas, Stroke stroke, Paint paint) {
     if (stroke.points.length < 2) return;
 
-    final p1 = stroke.points[stroke.points.length - 2];
     final p2 = stroke.points.last;
+    Offset p1 = stroke.points[stroke.points.length - 2];
+
+    // Find a point slightly further back to calculate a stable angle
+    for (int i = stroke.points.length - 2; i >= 0; i--) {
+      final distance = (p2 - stroke.points[i]).distance;
+      if (distance >= 10.0) {
+        p1 = stroke.points[i];
+        break;
+      }
+    }
 
     final double dX = p2.dx - p1.dx;
     final double dY = p2.dy - p1.dy;
